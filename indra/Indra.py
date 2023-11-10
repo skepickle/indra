@@ -5,12 +5,9 @@ import time
 from airavata import Airavata
 from command_completer import CommandCompleter
 
-class Indra:
+from indra.constructors import Indra as IndraConstructors
 
-  def __init__(self):
-    self.airavata = None
-    self.account  = None
-    self.running  = True
+class Indra(IndraConstructors):
 
   def __enter__(self):
     print("Indra __enter__()")
@@ -117,7 +114,9 @@ class Indra:
         try:
           cmd = input(self.prompt())
         except EOFError:
-          print("EOFError")
+          #print("EOFError")
+          print()
+          pass
         if cmd in commands.keys():
           commands[cmd]()
         #TODO HERE check pipe from Airavata
