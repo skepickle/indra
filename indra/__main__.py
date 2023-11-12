@@ -15,6 +15,9 @@ def main(*args, **kwargs):
     del pgm
   sys.exit(rval)
 
+def ctrl_c_handler(sig, frame):
+  global pgm
+
 def signal_handler(sig, frame):
   #print('You pressed CTRL+C: ' + str(sig))
   global pgm
@@ -26,7 +29,7 @@ def signal_handler(sig, frame):
 if __name__ == '__main__':
   # print(os.name)
   # print(sys.platform)
-  signal.signal(signal.SIGINT,  signal_handler)
+  #signal.signal(signal.SIGINT,  ctrl_c_handler)
   signal.signal(signal.SIGQUIT, signal_handler)
   signal.signal(signal.SIGTERM, signal_handler)
   if hasattr(signal, "SIGBREAK"):
