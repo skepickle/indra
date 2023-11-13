@@ -1,16 +1,18 @@
 from indra import Indra
 
 import sys
-#import os
 import signal
 
 def main(*args, **kwargs):
   global pgm
+  import logging
+  logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   rval = 0
   pgm = Indra()
   if (pgm):
     rval = pgm.main()
   if (pgm):
+    #print()
     pgm.cleanup()
     del pgm
   sys.exit(rval)

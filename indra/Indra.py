@@ -1,44 +1,38 @@
-import multiprocessing as mp
-import time
+#import multiprocessing as mp
 
 from airavata import Airavata
 
-from indra.specials import Indra as IndraSpecials
+from indra.internal import Indra as IndraInternal
+from indra.special import Indra as IndraSpecial
 from indra.cli import Indra as IndraCLI
 
-class Indra(IndraSpecials, IndraCLI):
-
-  def cleanup(self):
-    print('\nIndra clean up.')
-    if (self.airavata):
-      # if (logged in): send pipe info to airavata process and wait for ack.
-      del self.airavata
-      self.account = None
+class Indra(IndraInternal, IndraSpecial, IndraCLI):
 
   def help(self):
-    print("help")
-    #TODO print help info
+    import logging
+    logging.debug("->help()")
 
   def login(self):
+    import logging
+    logging.debug("->login()")
     try:
-      print("login()")
       import os.path
-      config_dir = os.path.expanduser("~") + "/.pgm"
-      if os.path.exists(config_dir) and os.path.isfile(config_dir):
-        print("ERROR: ~/.pgm is is not a directory.")
+      try:
+        config_dir = self.config_dir()
+      except:
         return
-      if not os.path.exists(config_dir):
-        os.mkdir(config_dir, 0o750)
       if self.account:
-        print("Already logged into "+str(self.account))
-        print("Logout first if you want to log into another account")
+        logging.info("Already logged into "+str(self.account))
+        logging.info("Logout first if you want to log into another account")
         return
-      else:
-        del airavata
-        print("Failed to login")
-      #TODO prompt for cred/auth
-      account = self.input("Account: ")
+      while True:
+        account = self.input("Account: ", self.config_dir_accounts())
+        if account and account.count('@') != 1:
+          logging.error("Account names must fit <username@example.com> pattern")
+        else:
+          break
       if not account:
+        logging.error("Cancelling login")
         return
       cred_file = config_dir+"/"+account+".cred"
       if os.path.isfile(cred_file):
@@ -50,8 +44,8 @@ class Indra(IndraSpecials, IndraCLI):
           return
         else:
           del airavata
-          print("Failed to login using existing credentials file at "+cred_file)
-          print("Prompting further to fix...")
+          logging.error("Failed to login using existing credentials file at "+cred_file)
+          logging.error("Prompting further to fix...")
       key    = self.input("Client key: ")
       secret = self.input("Client secret: ")
       token  = self.input("Your access token: ")
@@ -64,9 +58,8 @@ class Indra(IndraSpecials, IndraCLI):
         f.write(secret+"\n")
         f.close()
       except:
-        print("Error: Could not write to credentials file at "+cred_file)
+        logging.error("Could not write to credentials file at "+cred_file)
       if os.path.isfile(cred_file):
-        # try to login and return if successful
         airavata = Airavata(cred_file)
         if (airavata.mastodon):
           self.account = account
@@ -74,39 +67,39 @@ class Indra(IndraSpecials, IndraCLI):
           return
         else:
           del airavata
-          print("Failed to login")
+          logging.error("Failed to login")
     except KeyboardInterrupt:
-      print(" <Ctrl+C>")
+      logging.debug("Pressed <Ctrl+C>")
       s = None
 
   def logout(self):
-    print("logout")
-    #TODO ask for confirmation
+    import logging
+    logging.debug("->logout()")
 
   def quit(self):
-    print("quit")
+    import logging
+    logging.debug("->quit()")
     #TODO ask for confirmation
     self.running = False
 
   def main(self):
-    try:
-      while self.running:
-        try:
-          cmd = self.command_input(self.command_prompt())
-          if cmd in self.commands.keys():
-            self.commands[cmd]()
-          #TODO HERE check pipe from Airavata
-          #TODO HERE update state
-          #TODO HERE
-          #TODO HERE
-          time.sleep(0.10)
-        except KeyboardInterrupt:
-          print(" <Ctrl+C>")
-          s = None
-
-    except Exception as e:
-      print('Interrupted something else')
-      print(e)
-      return 1
+    import logging
+    import time
+    logging.debug("->main()")
+    while self.running:
+      try:
+        cmd = self.command_input()
+        if cmd in self.commands.keys():
+          self.commands[cmd]()
+        #TODO HERE check pipe from Airavata
+        #TODO HERE update state
+        #TODO HERE
+        #TODO HERE
+        time.sleep(0.10)
+      except KeyboardInterrupt:
+        logging.debug("Pressed <Ctrl+C>")
+        s = None
+      except Exception as e:
+        logging.debug('Exception occurred: ' + str(type(e)))
 
     return 0

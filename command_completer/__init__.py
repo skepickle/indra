@@ -24,7 +24,10 @@ class CommandCompleter(object):  # Custom completer
     line_buffer = readline.get_line_buffer()
     columns = get_terminal_size().columns
     print()
-    tpl = "{:<" + str(int(max(map(len, matches)) * 1.2)) + "}"
+    #tpl = "{:<" + str(int(max(map(len, matches)) * 1.2)) + "}"
+    # Change to require at least one space between matches
+    tpl = "{:<" + str(int(max(max(map(len, matches)) * 1.2,
+                              max(map(len, matches)) + 1))) + "}"
     buffer = ""
     for match in matches:
       match = tpl.format(match[len(substitution):])
