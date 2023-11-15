@@ -46,3 +46,6 @@ class Indra():
       # if (logged in): send pipe info to airavata process and wait for ack.
       del self.airavata
       self.account = None
+
+  def null_sig_handler(signum, frame):
+    return

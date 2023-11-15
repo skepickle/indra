@@ -37,16 +37,21 @@ class Indra(IndraInternal, IndraSpecial, IndraCLI):
       cred_file = config_dir+"/"+account+".cred"
       while True:
         if os.path.isfile(cred_file):
+          import signal
           # try to login and return if successful
+          original_sigint_handler = signal.getsignal(signal.SIGINT)
+          signal.signal(signal.SIGINT, self.null_sig_handler)
           airavata = Airavata(cred_file)
           if (airavata.mastodon):
             self.account = account
             self.airavata = airavata
+            signal.signal(signal.SIGINT, original_sigint_handler)
             return
           else:
             del airavata
             logging.error("Failed to login using existing credentials file at "+cred_file)
             logging.error("Prompting further to overwrite file...")
+            signal.signal(signal.SIGINT, original_sigint_handler)
         domain = "https://" + account.partition("@")[2]
         while True:
           key = self.input("Client key: ")
@@ -84,11 +89,13 @@ class Indra(IndraInternal, IndraSpecial, IndraCLI):
           return
     except KeyboardInterrupt:
       logging.debug("Pressed <Ctrl+C>")
-      s = None
 
   def logout(self):
-    import logging
-    logging.debug("->logout()")
+    try:
+      import logging
+      logging.debug("->logout()")
+    except KeyboardInterrupt:
+      logging.debug("Pressed <Ctrl+C>")
 
   def quit(self):
     import logging
