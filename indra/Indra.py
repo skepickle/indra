@@ -13,9 +13,9 @@ class Indra(IndraInternal, IndraSpecial, IndraCLI):
     logging.debug("->help()")
 
   def login(self):
-    import logging
-    logging.debug("->login()")
     try:
+      import logging
+      logging.debug("->login()")
       import os.path
       try:
         config_dir = self.config_dir()
@@ -35,39 +35,53 @@ class Indra(IndraInternal, IndraSpecial, IndraCLI):
         logging.error("Cancelling login")
         return
       cred_file = config_dir+"/"+account+".cred"
-      if os.path.isfile(cred_file):
-        # try to login and return if successful
-        airavata = Airavata(cred_file)
-        if (airavata.mastodon):
-          self.account = account
-          self.airavata = airavata
+      while True:
+        if os.path.isfile(cred_file):
+          # try to login and return if successful
+          airavata = Airavata(cred_file)
+          if (airavata.mastodon):
+            self.account = account
+            self.airavata = airavata
+            return
+          else:
+            del airavata
+            logging.error("Failed to login using existing credentials file at "+cred_file)
+            logging.error("Prompting further to overwrite file...")
+        domain = "https://" + account.partition("@")[2]
+        while True:
+          key = self.input("Client key: ")
+          if not key:
+            logging.error("Cancelling login")
+            return
+          if key.len() != 43:
+            logging.error("Invalid client key")
+          else:
+            break
+        while True:
+          secret = self.input("Client secret: ")
+          if not secret:
+            logging.error("Cancelling login")
+            return
+          if secret.len() != 43:
+            logging.error("Invalid client secret")
+          else:
+            break
+        while True:
+          token = self.input("Your access token: ")
+          if not token:
+            logging.error("Cancelling login")
+            return
+          if token.len() != 43:
+            logging.error("Invalid access token")
+          else:
+            break
+        try:
+          f = open(cred_file, "w")
+          f.write(token+"\n"+domain+"\n"+key+"\n"+secret+"\n")
+          f.close()
+        except:
+          logging.error("Could not write to credentials file at "+cred_file)
           return
-        else:
-          del airavata
-          logging.error("Failed to login using existing credentials file at "+cred_file)
-          logging.error("Prompting further to fix...")
-      key    = self.input("Client key: ")
-      secret = self.input("Client secret: ")
-      token  = self.input("Your access token: ")
-      domain = "https://" + account.partition("@")[2]
-      try:
-        f = open(cred_file, "w")
-        f.write(token+"\n")
-        f.write(domain+"\n")
-        f.write(key+"\n")
-        f.write(secret+"\n")
-        f.close()
-      except:
-        logging.error("Could not write to credentials file at "+cred_file)
-      if os.path.isfile(cred_file):
-        airavata = Airavata(cred_file)
-        if (airavata.mastodon):
-          self.account = account
-          self.airavata = airavata
-          return
-        else:
-          del airavata
-          logging.error("Failed to login")
     except KeyboardInterrupt:
       logging.debug("Pressed <Ctrl+C>")
       s = None
