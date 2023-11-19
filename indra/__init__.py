@@ -1,1 +1,1 @@
-from indra.Indra import Indra
+from .Indra import Indra

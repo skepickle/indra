@@ -4,28 +4,28 @@ import sys
 import signal
 
 def main(*args, **kwargs):
-  global pgm
+  global indra
   import logging
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   rval = 0
-  pgm = Indra()
-  if (pgm):
-    rval = pgm.main()
-  if (pgm):
+  indra = Indra()
+  if (indra):
+    rval = indra.main()
+  if (indra):
     #print()
-    pgm.cleanup()
-    del pgm
+    indra.cleanup()
+    del indra
   sys.exit(rval)
 
 def ctrl_c_handler(sig, frame):
-  global pgm
+  global indra
 
 def signal_handler(sig, frame):
   #print('You pressed CTRL+C: ' + str(sig))
-  global pgm
-  if (pgm):
-    pgm.cleanup()
-    del pgm
+  global indra
+  if (indra):
+    indra.cleanup()
+    del indra
   sys.exit(130)
 
 if __name__ == '__main__':

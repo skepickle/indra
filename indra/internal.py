@@ -14,20 +14,23 @@ class Indra():
       'exit'     : self.quit,
     }
     self.commands_completer = None
+    self.parent_conn = None
+    self.child_conn = None
+    self.child_proc = None
 
   def config_dir(self):
     import logging
     import os
-    dir = os.path.expanduser("~") + "/.pgm"
+    dir = os.path.expanduser("~") + "/.vritrasura"
     if os.path.exists(dir) and os.path.isfile(dir):
-      logging.error('~/.pgm exists but is not a directory')
+      logging.error('~/.vritrasura exists but is not a directory')
       raise NotADirectoryError
     if not os.path.exists(dir):
       os.mkdir(dir, 0o750)
       return dir
     if not (os.access(dir, os.R_OK) and
             os.access(dir, os.X_OK)):
-      logging.error('~/.pgm directory exists but is not accessible')
+      logging.error('~/.vritrasura directory exists but is not accessible')
       raise PermissionError
     return dir
 
@@ -44,6 +47,8 @@ class Indra():
     logging.debug('Indra clean up.')
     if (self.airavata):
       # if (logged in): send pipe info to airavata process and wait for ack.
+      if self.parent_conn:
+        self.parent_conn.send("Indra->cleanup()")
       del self.airavata
       self.account = None
 

@@ -1,4 +1,4 @@
-# cli.py - internal methods for CLI interactions
+# terminal.py - internal methods for terminal interactions
 
 class Indra():
 

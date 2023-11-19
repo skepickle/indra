@@ -1,4 +1,6 @@
 from mastodon import Mastodon
+import time
+#from multiprocessing import Pipe
 
 class Airavata:
 
@@ -18,3 +20,15 @@ class Airavata:
       #print("Not logged in!")
       self.mastodon = None
     #self.mastodon.toot('Tooting from Python using #mastodonpy !')
+
+  def main(self, conn):
+    i = 0
+    while True:
+      time.sleep(1)
+      i = (i + 1) % 10
+      if conn and conn.poll(0):
+        cmd = conn.recv()
+        if cmd == "Indra->cleanup()":
+          return
+      if not i:
+        conn.send("ping")
