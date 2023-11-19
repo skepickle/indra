@@ -59,3 +59,7 @@ class Indra():
       logging.debug("Pressed <Ctrl+C>")
       s = None
     return s
+
+  def multiline_input(self, prompt, options=[]):
+    pass
+    return

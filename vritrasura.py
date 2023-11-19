@@ -2,10 +2,10 @@ from indra import Indra
 
 import sys
 import signal
+import logging
 
 def main(*args, **kwargs):
   global indra
-  import logging
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
   rval = 0
   indra = Indra()
@@ -19,6 +19,8 @@ def main(*args, **kwargs):
 
 def ctrl_c_handler(sig, frame):
   global indra
+  pass
+  return
 
 def signal_handler(sig, frame):
   #print('You pressed CTRL+C: ' + str(sig))

@@ -18,8 +18,8 @@ class Indra(IndraInternal, IndraSpecial, IndraTerminal, IndraConnection):
     self.running = False
 
   def main(self):
-    import time
     logging.debug("->main()")
+    self.running = True
     while self.running:
       try:
         cmd = self.command_input()

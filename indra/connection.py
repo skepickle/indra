@@ -1,15 +1,16 @@
 # connection.py - internal methods for CLI interactions
 
 from airavata import Airavata
+import os.path
+import logging
+import signal
 import multiprocessing
 
 class Indra():
 
   def login(self):
     try:
-      import logging
       logging.debug("->login()")
-      import os.path
       try:
         config_dir = self.config_dir()
       except:
@@ -30,7 +31,6 @@ class Indra():
       cred_file = config_dir+"/"+account+".cred"
       while True:
         if os.path.isfile(cred_file):
-          import signal
           # try to login and return if successful
           original_sigint_handler = signal.getsignal(signal.SIGINT)
           signal.signal(signal.SIGINT, self.null_sig_handler)
@@ -89,7 +89,6 @@ class Indra():
 
   def logout(self):
     try:
-      import logging
       logging.debug("->logout()")
     except KeyboardInterrupt:
       logging.debug("Pressed <Ctrl+C>")

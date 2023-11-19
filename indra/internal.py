@@ -5,7 +5,7 @@ class Indra():
   def __init__(self):
     self.airavata = None
     self.account  = None
-    self.running  = True
+    self.running  = False
     self.commands = {
       'help'     : self.help,
       'login'    : self.login,
@@ -45,10 +45,11 @@ class Indra():
   def cleanup(self):
     import logging
     logging.debug('Indra clean up.')
-    if (self.airavata):
+    if self.airavata:
       # if (logged in): send pipe info to airavata process and wait for ack.
       if self.parent_conn:
         self.parent_conn.send("Indra->cleanup()")
+      #TODO Maybe clean out parent_conn.recv pipeline before exitting...
       del self.airavata
       self.account = None
 
