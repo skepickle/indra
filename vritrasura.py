@@ -6,8 +6,9 @@ import logging
 
 def main(*args, **kwargs):
   global indra
+  #TODO add argument parsing and maybe have logging level be setable.
   logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
-  rval = 0
+  rval = 1
   indra = Indra()
   if (indra):
     rval = indra.main()
