@@ -24,11 +24,16 @@ class Airavata:
   def main(self, conn):
     i = 0
     while True:
-      time.sleep(1)
-      i = (i + 1) % 10
-      if conn and conn.poll(0):
-        cmd = conn.recv()
-        if cmd == "Indra->cleanup()":
-          return
-      if not i:
-        conn.send("ping")
+      try:
+        time.sleep(1)
+        i = (i + 1) % 10
+        if conn and conn.poll(0):
+          cmd = conn.recv()
+          if cmd == "Indra->cleanup()":
+            return
+        if not i:
+          conn.send("ping")
+      except KeyboardInterrupt:
+        pass
+      except Exception as e:
+        pass

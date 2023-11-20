@@ -34,7 +34,7 @@ def signal_handler(sig, frame):
 if __name__ == '__main__':
   # print(os.name)
   # print(sys.platform)
-  #signal.signal(signal.SIGINT,  ctrl_c_handler)
+  signal.signal(signal.SIGINT,  ctrl_c_handler)
   signal.signal(signal.SIGQUIT, signal_handler)
   signal.signal(signal.SIGTERM, signal_handler)
   if hasattr(signal, "SIGBREAK"):
